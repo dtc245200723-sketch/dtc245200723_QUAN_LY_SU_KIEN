@@ -11,6 +11,7 @@ This project provides:
 - pgAdmin for database administration.
 - Nginx with self-signed TLS certificate as reverse proxy.
 - Prometheus and Grafana for system monitoring.
+- Django and PostgreSQL metrics exported to Prometheus.
 - Loki and Promtail for centralized logging.
 - Docker Compose deployment with isolated frontend/backend networks.
 
@@ -23,23 +24,23 @@ This project provides:
 ## Setup
 
 1. Create the environment file:
-   - Copy `.env.example` to `.env`
-   - Update the values for your local environment
+   - In PowerShell, run `Copy-Item .env.example .env` (skip if `.env` already exists).
+   - Replace all sample passwords and the Django secret with strong, unique values.
+   - Keep `.env` private; it is excluded from Git.
 
 2. Generate a self-signed certificate:
 
-```bash
-mkdir -p nginx/certs
-openssl req -x509 -nodes -newkey rsa:2048 \
-  -keyout nginx/certs/server.key \
-  -out nginx/certs/server.crt \
-  -days 365 \
-  -subj "/CN=localhost"
+Run this from PowerShell in the repository directory:
+
+```powershell
+New-Item -ItemType Directory -Force nginx\certs
+openssl req -x509 -nodes -newkey rsa:2048 -keyout nginx\certs\server.key -out nginx\certs\server.crt -days 365 -subj "/CN=localhost"
 ```
 
 3. Start the stack:
 
 ```bash
+docker compose config -q
 docker compose up --build -d
 ```
 
@@ -57,6 +58,7 @@ docker compose logs -f web db nginx
 - pgAdmin: http://localhost:5050
 - Prometheus: http://localhost:9090
 - Grafana: http://localhost:3000
+- Loki API (local diagnostics): http://localhost:3100
 
 ## Default credentials
 
@@ -74,27 +76,55 @@ Use values defined in `.env`.
 ## Monitoring verification
 
 - Prometheus targets: http://localhost:9090/targets
-- Grafana datasource: Prometheus and Loki should be auto-provisioned
-- Dashboard: Event Monitoring Dashboard should appear in Grafana
+- Confirm `prometheus`, `node-exporter`, `cadvisor`, `postgres-exporter`, `nginx-exporter`, and `django-web` targets are `UP`.
+- Grafana provisions Prometheus and Loki with stable datasource IDs.
+- Dashboard: **Event Monitoring Dashboard** includes CPU, memory, Nginx traffic, PostgreSQL connections, Django request rate, and scrape status.
+- Django `/metrics` is collected internally by Prometheus; it is not exposed through the public Nginx proxy.
+- Nginx `stub_status` listens on the internal-only container port `8081` for the exporter.
 
 ## Logging verification
 
-The following Loki queries should return logs when the services are active:
+In Grafana **Explore**, select the Loki datasource and run these LogQL queries:
 
 ```logql
 {compose_service="web"}
 {compose_service="web"} |= "ERROR"
 {compose_service="nginx"} |~ "\" 5[0-9][0-9] "
+sum by (compose_service) (count_over_time({compose_service=~".+"}[5m]))
 ```
+
+The final query counts log entries over five minutes grouped by service.
+
+## Automated checks
+
+Run these after starting the stack:
+
+```powershell
+docker compose exec web python manage.py test events
+docker compose exec nginx nginx -t
+docker compose exec prometheus promtool check config /etc/prometheus/prometheus.yml
+curl.exe -k https://localhost/health/
+```
+
+Expected results: Django tests pass, Nginx reports a successful configuration test, Prometheus reports valid configuration, and the health endpoint returns HTTP 200.
 
 ## Hardening notes
 
 - Django runs as a non-root user inside the container.
 - Sensitive values are managed via `.env` instead of being committed.
-- Internal services use backend/frontend Docker networks.
+- The `backend` network isolates PostgreSQL, pgAdmin, exporters, and logging services from direct public access; the `frontend` network connects only services that need web traffic.
+- Event creation, editing, and deletion are restricted to staff accounts.
 - Nginx exposes only HTTP/HTTPS for external access.
 - Security headers are configured in the Nginx reverse proxy.
+- PostgreSQL, pgAdmin, Prometheus, Grafana, Loki, and exporter host ports are bound to loopback where published.
+- Nginx status metrics are available only on its internal Compose network.
 - Use self-signed TLS certificates only for local testing.
+
+## Demo evidence and report
+
+The Vietnamese report draft is available at `docs/Bao_cao_de_tai_26_quan_ly_su_kien.docx`. It includes the architecture illustration and clearly marked screenshot placeholders.
+
+For the submission, capture screenshots showing the website, pgAdmin connected to PostgreSQL, all Prometheus targets up, the Grafana dashboard, at least three successful Loki queries, and the Nginx security headers. Include these in the report along with the student cover page and system/implementation explanations. Do not include `.env` or private keys in screenshots or the GitHub repository.
 
 ## Troubleshooting
 

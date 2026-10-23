@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
@@ -49,7 +50,7 @@ def login_view(request):
     return render(request, 'events/login.html', {'form': form})
 
 
-@login_required
+@staff_member_required
 def create_event(request):
     if request.method == 'POST':
         form = EventForm(request.POST)
@@ -62,7 +63,7 @@ def create_event(request):
     return render(request, 'events/create_event.html', {'form': form})
 
 
-@login_required
+@staff_member_required
 def edit_event(request, event_id):
     event = Event.objects.get(pk=event_id)
     if request.method == 'POST':
@@ -76,7 +77,7 @@ def edit_event(request, event_id):
     return render(request, 'events/edit_event.html', {'form': form, 'event': event})
 
 
-@login_required
+@staff_member_required
 def delete_event(request, event_id):
     event = Event.objects.get(pk=event_id)
     if request.method == 'POST':
