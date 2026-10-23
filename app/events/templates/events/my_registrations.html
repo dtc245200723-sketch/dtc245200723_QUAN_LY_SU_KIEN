@@ -1,0 +1,27 @@
+{% extends 'events/base.html' %}
+
+{% block content %}
+  <h2>My Registrations</h2>
+  {% if registrations %}
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Registered At</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for registration in registrations %}
+          <tr>
+            <td>{{ registration.event.title }}</td>
+            <td>{{ registration.registered_at }}</td>
+            <td>{{ registration.status }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>You have no registrations yet.</p>
+  {% endif %}
+{% endblock %}

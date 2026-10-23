@@ -1,0 +1,27 @@
+{% extends 'events/base.html' %}
+
+{% block content %}
+  <h2>My Tickets</h2>
+  {% if tickets %}
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Event</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ticket in tickets %}
+          <tr>
+            <td>{{ ticket.ticket_code }}</td>
+            <td>{{ ticket.event.title }}</td>
+            <td>{{ ticket.status }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>You have no tickets yet.</p>
+  {% endif %}
+{% endblock %}

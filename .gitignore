@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.log
+*.pot
+*.pyc
+venv/
+.venv/
+.env
+
+# Django
+staticfiles/
+media/
+
+# Docker
+*.tar
+
+# Editor
+.vscode/
+.idea/
+.DS_Store
+
+# OS
+Thumbs.db
+
+# generated certs
+nginx/certs/*.key
+nginx/certs/*.crt

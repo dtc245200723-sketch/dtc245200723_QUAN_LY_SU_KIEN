@@ -1,0 +1,30 @@
+{% extends 'events/base.html' %}
+
+{% block content %}
+  <div class="card">
+    <div class="card-body">
+      <h2>{{ event.title }}</h2>
+      <p>{{ event.description }}</p>
+      <p><strong>Date:</strong> {{ event.event_date }}</p>
+      <p><strong>Location:</strong> {{ event.location }}</p>
+      <p><strong>Capacity:</strong> {{ event.capacity }}</p>
+      <p><strong>Available tickets:</strong> {{ event.available_tickets }}</p>
+
+      {% if user.is_authenticated %}
+        {% if not already_registered and event.available_tickets > 0 %}
+          <a href="{% url 'register_event' event.id %}" class="btn btn-success">Register</a>
+        {% elif already_registered %}
+          <span class="text-success">You already registered for this event.</span>
+        {% else %}
+          <span class="text-danger">Tickets sold out.</span>
+        {% endif %}
+        {% if user.is_staff %}
+          <a href="{% url 'edit_event' event.id %}" class="btn btn-warning">Edit</a>
+          <a href="{% url 'delete_event' event.id %}" class="btn btn-danger">Delete</a>
+        {% endif %}
+      {% else %}
+        <a href="{% url 'login' %}" class="btn btn-primary">Login to register</a>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
