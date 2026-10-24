@@ -4,16 +4,16 @@ from .models import Event, Registration, Ticket
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
-    list_display = ('title', 'event_date', 'location', 'capacity', 'available_tickets')
-    search_fields = ('title', 'location')
+    list_display = ('event_code', 'title', 'event_date', 'location', 'capacity', 'available_tickets')
+    search_fields = ('event_code', 'title', 'location')
     list_filter = ('event_date',)
 
 
 @admin.register(Registration)
 class RegistrationAdmin(admin.ModelAdmin):
-    list_display = ('user', 'event', 'registered_at', 'status')
+    list_display = ('attendee_name', 'user', 'event', 'registered_at', 'status')
     list_filter = ('status', 'registered_at')
-    search_fields = ('user__username', 'event__title')
+    search_fields = ('attendee_name', 'user__username', 'user__email', 'event__title')
 
 
 @admin.register(Ticket)

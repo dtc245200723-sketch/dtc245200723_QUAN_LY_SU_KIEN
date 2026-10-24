@@ -1,11 +1,11 @@
 {% extends 'events/base.html' %}
 
+{% block title %}Xóa sự kiện | EventHub{% endblock %}
+
 {% block content %}
-  <h2>Delete Event</h2>
-  <p>Are you sure you want to delete {{ event.title }}?</p>
-  <form method="post">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger">Delete</button>
-    <a href="{% url 'event_detail' event.id %}" class="btn btn-secondary">Cancel</a>
-  </form>
+  <div class="row justify-content-center"><div class="col-lg-6"><section class="card-surface p-4 p-lg-5">
+    <span class="eyebrow text-danger">{{ event.event_code }}</span><h1 class="h2 mt-2">Xóa sự kiện</h1>
+    <p>Bạn có chắc muốn xóa <strong>{{ event.title }}</strong>? Thao tác này cũng xóa các đăng ký và vé liên quan.</p>
+    <form method="post">{% csrf_token %}<button type="submit" class="btn btn-danger">Xác nhận xóa</button><a href="{% url 'event_detail' event.id %}" class="btn btn-outline-secondary ms-2">Hủy</a></form>
+  </section></div></div>
 {% endblock %}

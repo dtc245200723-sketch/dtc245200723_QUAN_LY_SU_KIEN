@@ -1,30 +1,60 @@
 {% extends 'events/base.html' %}
 
-{% block content %}
-  <div class="card">
-    <div class="card-body">
-      <h2>{{ event.title }}</h2>
-      <p>{{ event.description }}</p>
-      <p><strong>Date:</strong> {{ event.event_date }}</p>
-      <p><strong>Location:</strong> {{ event.location }}</p>
-      <p><strong>Capacity:</strong> {{ event.capacity }}</p>
-      <p><strong>Available tickets:</strong> {{ event.available_tickets }}</p>
+{% block title %}{{ event.title }} | EventHub{% endblock %}
 
-      {% if user.is_authenticated %}
-        {% if not already_registered and event.available_tickets > 0 %}
-          <a href="{% url 'register_event' event.id %}" class="btn btn-success">Register</a>
-        {% elif already_registered %}
-          <span class="text-success">You already registered for this event.</span>
+{% block content %}
+  <div class="detail-hero">
+    <a href="{% url 'home' %}#events" class="back-link">← Quay lại danh sách</a>
+    <div class="detail-hero-inner">
+      <div><span class="event-category">{{ event.category }}</span><span class="event-code ms-2">{{ event.event_code }}</span>
+        <h1>{{ event.title }}</h1>
+        {% if event.is_active %}<span class="status-pill status-open">Đang mở đăng ký</span>{% else %}<span class="status-pill status-upcoming">Sắp diễn ra</span>{% endif %}
+      </div>
+      <div class="detail-date"><strong>{{ event.event_date|date:"d" }}</strong><span>{{ event.event_date|date:"M Y"|upper }}</span></div>
+    </div>
+  </div>
+  <div class="row g-4 mt-1">
+    <div class="col-lg-8">
+      <section class="card-surface p-4 p-lg-5 mb-4">
+        <span class="eyebrow text-primary">GIỚI THIỆU SỰ KIỆN</span>
+        <h2 class="h3 mt-2">Về sự kiện này</h2>
+        <p class="detail-description">{{ event.description|linebreaksbr }}</p>
+      </section>
+      <section class="card-surface p-4">
+        <h2 class="h4 mb-3">Thông tin sự kiện</h2>
+        <div class="event-info-grid">
+          <div><small>Mã sự kiện</small><strong>{{ event.event_code }}</strong></div>
+          <div><small>Thời gian bắt đầu</small><strong>{{ event.event_date|date:"d/m/Y, H:i" }}</strong></div>
+          <div><small>Thời gian kết thúc</small><strong>{% if event.end_date %}{{ event.end_date|date:"d/m/Y, H:i" }}{% else %}Chưa cập nhật{% endif %}</strong></div>
+          <div><small>Hạn đăng ký</small><strong>{% if event.registration_deadline %}{{ event.registration_deadline|date:"d/m/Y, H:i" }}{% else %}Đến khi hết chỗ{% endif %}</strong></div>
+          <div><small>Địa điểm</small><strong>{{ event.location }}</strong></div>
+          <div><small>Sức chứa</small><strong>{{ event.capacity }} người</strong></div>
+          <div><small>Đã đăng ký</small><strong>{{ event.registered_count }} người</strong></div>
+          <div><small>Chỗ còn trống</small><strong>{{ event.available_tickets }} người</strong></div>
+        </div>
+      </section>
+    </div>
+    <aside class="col-lg-4">
+      <div class="registration-card">
+        <span class="eyebrow">THAM GIA SỰ KIỆN</span>
+        <h2 class="h4 mt-2">Đăng ký tham dự</h2>
+        <p>Hoàn tất đăng ký để nhận vé điện tử riêng của bạn.</p>
+        <div class="capacity-track mb-2"><span style="width: {% if event.capacity %}{% widthratio event.registered_count event.capacity 100 %}{% else %}0{% endif %}%"></span></div>
+        <div class="d-flex justify-content-between small mb-3"><span>{{ event.registered_count }}/{{ event.capacity }} người</span><span>Còn {{ event.available_tickets }} chỗ</span></div>
+        {% if already_registered %}
+          <div class="alert alert-success">Bạn đã đăng ký sự kiện này.</div>
+          <a href="{% url 'my_tickets' %}" class="btn btn-primary w-100">Xem vé của tôi</a>
+        {% elif user.is_authenticated and event.is_active %}
+          <a href="{% url 'register_event' event.id %}" class="btn btn-primary w-100">Đăng ký tham dự</a>
+        {% elif not user.is_authenticated and event.is_active %}
+          <a href="{% url 'login' %}?next={% url 'register_event' event.id %}" class="btn btn-primary w-100">Đăng nhập để đăng ký</a>
         {% else %}
-          <span class="text-danger">Tickets sold out.</span>
+          <div class="alert alert-warning">Sự kiện đã hết chỗ hoặc đóng đăng ký.</div>
         {% endif %}
         {% if user.is_staff %}
-          <a href="{% url 'edit_event' event.id %}" class="btn btn-warning">Edit</a>
-          <a href="{% url 'delete_event' event.id %}" class="btn btn-danger">Delete</a>
+          <div class="d-flex gap-2 mt-3"><a href="{% url 'edit_event' event.id %}" class="btn btn-outline-secondary flex-fill">Chỉnh sửa</a><a href="{% url 'delete_event' event.id %}" class="btn btn-outline-danger flex-fill">Xóa</a></div>
         {% endif %}
-      {% else %}
-        <a href="{% url 'login' %}" class="btn btn-primary">Login to register</a>
-      {% endif %}
-    </div>
+      </div>
+    </aside>
   </div>
 {% endblock %}

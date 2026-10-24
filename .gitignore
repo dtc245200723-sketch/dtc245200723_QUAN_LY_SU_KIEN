@@ -27,3 +27,7 @@ Thumbs.db
 # generated certs
 nginx/certs/*.key
 nginx/certs/*.crt
+
+# Environment files
+.env.*
+!.env.example

@@ -1,0 +1,19 @@
+{% extends 'events/base.html' %}
+
+{% block title %}Báo cáo hoạt động | EventHub{% endblock %}
+
+{% block content %}
+  <div class="page-heading"><div><span class="eyebrow text-primary">PHÂN TÍCH</span><h1>Báo cáo hoạt động sự kiện</h1><p>Các chỉ số được tính trực tiếp từ dữ liệu trong PostgreSQL.</p></div></div>
+  <div class="row g-3 mb-5">
+    <div class="col-6 col-xl"><div class="stat-card"><span class="stat-label">Tổng sự kiện</span><strong>{{ total_events }}</strong></div></div>
+    <div class="col-6 col-xl"><div class="stat-card"><span class="stat-label">Đang mở đăng ký</span><strong>{{ open_events }}</strong></div></div>
+    <div class="col-6 col-xl"><div class="stat-card"><span class="stat-label">Đăng ký xác nhận</span><strong>{{ confirmed_registrations }}</strong></div></div>
+    <div class="col-6 col-xl"><div class="stat-card"><span class="stat-label">Đăng ký đã hủy</span><strong>{{ cancelled_registrations }}</strong></div></div>
+    <div class="col-6 col-xl"><div class="stat-card"><span class="stat-label">Tỷ lệ lấp đầy</span><strong>{{ fill_rate }}%</strong></div></div>
+  </div>
+  <section class="section-block"><div class="section-heading"><div><h2>Sự kiện có nhiều lượt đăng ký</h2><p>Thống kê theo số lượt xác nhận.</p></div></div>
+    <div class="table-responsive card-surface"><table class="table align-middle mb-0"><thead><tr><th>Mã</th><th>Sự kiện</th><th>Ngày tổ chức</th><th>Đăng ký</th><th>Sức chứa</th><th>Lấp đầy</th></tr></thead>
+      <tbody>{% for event in top_events %}<tr><td><span class="event-code-inline">{{ event.event_code }}</span></td><td>{{ event.title }}</td><td>{{ event.event_date|date:"d/m/Y" }}</td><td>{{ event.confirmed_count }}</td><td>{{ event.capacity }}</td><td>{% if event.capacity %}{% widthratio event.confirmed_count event.capacity 100 %}{% else %}0{% endif %}%</td></tr>{% empty %}<tr><td colspan="6" class="text-center text-muted py-4">Chưa có dữ liệu sự kiện.</td></tr>{% endfor %}</tbody>
+    </table></div>
+  </section>
+{% endblock %}

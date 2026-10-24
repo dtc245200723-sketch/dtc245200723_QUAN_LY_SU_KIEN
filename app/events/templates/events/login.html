@@ -1,14 +1,21 @@
 {% extends 'events/base.html' %}
 
+{% block title %}Đăng nhập | EventHub{% endblock %}
+
 {% block content %}
   <div class="row justify-content-center">
-    <div class="col-md-6">
-      <h2>Login</h2>
+    <div class="col-md-6 col-lg-5">
+      <div class="card-surface p-4 p-lg-5">
+      <span class="eyebrow text-primary">CHÀO MỪNG TRỞ LẠI</span><h1 class="h2 mt-2">Đăng nhập</h1>
+      <p class="text-secondary">Đăng nhập để quản lý đăng ký và vé sự kiện của bạn.</p>
       <form method="post">
         {% csrf_token %}
+        {% if request.GET.next %}<input type="hidden" name="next" value="{{ request.GET.next }}">{% endif %}
         {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Login</button>
+        <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
       </form>
+      <p class="small mt-3 mb-0">Chưa có tài khoản? <a href="{% url 'signup' %}">Tạo tài khoản</a></p>
+      </div>
     </div>
   </div>
 {% endblock %}

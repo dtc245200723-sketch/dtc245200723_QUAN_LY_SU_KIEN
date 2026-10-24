@@ -1,0 +1,16 @@
+{% extends 'events/base.html' %}
+
+{% block title %}Cài đặt tài khoản | EventHub{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center"><div class="col-lg-7">
+    <section class="card-surface p-4 p-lg-5">
+      <span class="eyebrow text-primary">TÀI KHOẢN</span><h1 class="h2 mt-2">Cài đặt thông tin cá nhân</h1>
+      <p class="text-secondary">Cập nhật tên hiển thị và địa chỉ email của bạn.</p>
+      <form method="post">{% csrf_token %}
+        {% for field in form %}<div class="mb-3"><label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>{% endfor %}
+        <button class="btn btn-primary" type="submit">Lưu thay đổi</button>
+      </form>
+    </section>
+  </div></div>
+{% endblock %}

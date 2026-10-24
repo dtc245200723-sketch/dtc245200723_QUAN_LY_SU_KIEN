@@ -1,0 +1,30 @@
+{% extends 'events/base.html' %}
+
+{% block title %}Đăng ký tham dự | EventHub{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-7">
+      <a href="{% url 'event_detail' event.id %}" class="back-link">← Quay lại sự kiện</a>
+      <section class="card-surface p-4 p-lg-5 mt-3">
+        <span class="eyebrow text-primary">XÁC NHẬN CHỖ CỦA BẠN</span>
+        <h1 class="h2 mt-2">Đăng ký tham dự sự kiện</h1>
+        <p class="text-secondary">Vui lòng kiểm tra thông tin sự kiện và cung cấp thông tin cần thiết để hoàn tất đăng ký.</p>
+        <div class="selected-event mb-4"><span class="event-code-inline">{{ event.event_code }}</span><div><strong>{{ event.title }}</strong><small>{{ event.event_date|date:"d/m/Y · H:i" }} · {{ event.location }}</small></div></div>
+        <form method="post" action="{% url 'register_event' event.id %}">
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="mb-3">
+              <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {{ field }}
+              {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+              {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+            </div>
+          {% endfor %}
+          <div class="alert alert-info">Thời gian đăng ký sẽ được ghi nhận tự động khi bạn xác nhận.</div>
+          <div class="d-flex gap-2"><button type="submit" class="btn btn-primary">Xác nhận đăng ký</button><a href="{% url 'event_detail' event.id %}" class="btn btn-outline-secondary">Hủy</a></div>
+        </form>
+      </section>
+    </div>
+  </div>
+{% endblock %}

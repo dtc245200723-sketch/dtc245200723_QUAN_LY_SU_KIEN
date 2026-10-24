@@ -1,27 +1,11 @@
 {% extends 'events/base.html' %}
 
+{% block title %}Đăng ký tham dự | EventHub{% endblock %}
+
 {% block content %}
-  <h2>My Registrations</h2>
-  {% if registrations %}
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Event</th>
-          <th>Registered At</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for registration in registrations %}
-          <tr>
-            <td>{{ registration.event.title }}</td>
-            <td>{{ registration.registered_at }}</td>
-            <td>{{ registration.status }}</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <p>You have no registrations yet.</p>
-  {% endif %}
+  <div class="page-heading"><div><span class="eyebrow text-primary">LỊCH SỬ CỦA BẠN</span><h1>Đăng ký tham dự</h1><p>Quản lý các sự kiện bạn đã đăng ký.</p></div><a href="{% url 'home' %}#events" class="btn btn-primary">Tìm sự kiện</a></div>
+  <div class="table-responsive card-surface"><table class="table align-middle mb-0"><thead><tr><th>Sự kiện</th><th>Ngày đăng ký</th><th>Trạng thái</th><th>Vé</th></tr></thead>
+    <tbody>{% for registration in registrations %}<tr><td><a class="table-event-link" href="{% url 'event_detail' registration.event.id %}">{{ registration.event.title }}</a><small class="d-block text-muted">{{ registration.event.event_date|date:"d/m/Y H:i" }}</small></td><td>{{ registration.registered_at|date:"d/m/Y H:i" }}</td><td><span class="status-pill {% if registration.status == 'confirmed' %}status-open{% elif registration.status == 'pending' %}status-upcoming{% else %}status-closed{% endif %}">{{ registration.get_status_display }}</span></td><td>{% for ticket in registration.tickets.all %}<a href="{% url 'my_tickets' %}" class="event-code-inline">{{ ticket.ticket_code }}</a>{% empty %}<span class="text-muted">Chưa phát hành</span>{% endfor %}</td></tr>
+      {% empty %}<tr><td colspan="4"><div class="empty-state"><h3>Bạn chưa đăng ký sự kiện nào</h3><a href="{% url 'home' %}#events" class="btn btn-primary">Khám phá sự kiện</a></div></td></tr>{% endfor %}</tbody>
+  </table></div>
 {% endblock %}

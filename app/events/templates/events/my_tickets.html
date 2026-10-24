@@ -1,27 +1,25 @@
 {% extends 'events/base.html' %}
 
+{% block title %}Vé của tôi | EventHub{% endblock %}
+
 {% block content %}
-  <h2>My Tickets</h2>
-  {% if tickets %}
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Code</th>
-          <th>Event</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for ticket in tickets %}
-          <tr>
-            <td>{{ ticket.ticket_code }}</td>
-            <td>{{ ticket.event.title }}</td>
-            <td>{{ ticket.status }}</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <p>You have no tickets yet.</p>
-  {% endif %}
+  <div class="page-heading"><div><span class="eyebrow text-primary">VÉ ĐIỆN TỬ</span><h1>Vé tham dự sự kiện</h1><p>Mã vé được gắn với tài khoản của bạn. Hãy lưu lại để sử dụng khi tham gia.</p></div></div>
+  <div class="row g-4">
+    {% for ticket in tickets %}
+      <div class="col-lg-6">
+        <article class="ticket-card">
+          <div class="ticket-top"><span class="eyebrow">EVENTHUB · ADMISSION</span><span class="status-pill {% if ticket.status == 'valid' %}status-open{% else %}status-closed{% endif %}">{{ ticket.get_status_display }}</span></div>
+          <h2>{{ ticket.event.title }}</h2>
+          <div class="ticket-code">{{ ticket.ticket_code }}</div>
+          <div class="ticket-details">
+            <div><small>Người tham dự</small><strong>{{ ticket.registration.attendee_name|default:ticket.user.get_full_name|default:ticket.user.username }}</strong></div>
+            <div><small>Ngày tổ chức</small><strong>{{ ticket.event.event_date|date:"d/m/Y" }}</strong></div>
+            <div><small>Thời gian</small><strong>{{ ticket.event.event_date|date:"H:i" }}{% if ticket.event.end_date %}–{{ ticket.event.end_date|date:"H:i" }}{% endif %}</strong></div>
+            <div><small>Địa điểm</small><strong>{{ ticket.event.location }}</strong></div>
+          </div>
+          <div class="ticket-footer"><span>Mã sự kiện: {{ ticket.event.event_code }}</span><button class="btn btn-sm btn-outline-primary" type="button" onclick="window.print()">In vé</button></div>
+        </article>
+      </div>
+    {% empty %}<div class="col-12"><div class="empty-state"><h3>Bạn chưa có vé</h3><p>Khám phá sự kiện và đăng ký để nhận vé điện tử.</p><a href="{% url 'home' %}#events" class="btn btn-primary">Khám phá sự kiện</a></div></div>{% endfor %}
+  </div>
 {% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'events/base.html' %}
+
+{% block title %}Tổng quan hệ thống | EventHub{% endblock %}
+
+{% block content %}
+  <div class="page-heading">
+    <div><span class="eyebrow text-primary">BẢNG ĐIỀU KHIỂN</span><h1>Tổng quan hệ thống</h1>
+      <p>Theo dõi và quản lý các sự kiện của bạn tại một nơi.</p>
+    </div>
+    <a href="{% url 'home' %}#events" class="btn btn-primary">Khám phá sự kiện</a>
+  </div>
+  <section class="row g-3 mb-5" aria-label="Thống kê hệ thống">
+    <div class="col-6 col-xl-3"><div class="stat-card"><span class="stat-icon icon-purple">▦</span><span class="stat-label">Tổng số sự kiện</span><strong>{{ total_events }}</strong><small>Sự kiện trong hệ thống</small></div></div>
+    <div class="col-6 col-xl-3"><div class="stat-card"><span class="stat-icon icon-green">◉</span><span class="stat-label">Đang mở đăng ký</span><strong>{{ open_event_count }}</strong><small>Sự kiện còn chỗ</small></div></div>
+    <div class="col-6 col-xl-3"><div class="stat-card"><span class="stat-icon icon-blue">♙</span><span class="stat-label">Lượt đăng ký</span><strong>{{ total_registrations }}</strong><small>Đăng ký đã xác nhận</small></div></div>
+    <div class="col-6 col-xl-3"><div class="stat-card"><span class="stat-icon icon-orange">⌖</span><span class="stat-label">Chỗ còn trống</span><strong>{{ available_seats }}</strong><small>Tỷ lệ lấp đầy {{ fill_rate }}%</small></div></div>
+  </section>
+
+  <section class="section-block">
+    <div class="section-heading"><div><span class="eyebrow text-primary">SỐ LIỆU THỰC TẾ</span><h2>Sự kiện nổi bật</h2><p>Các sự kiện có nhiều lượt đăng ký nhất.</p></div><a href="{% url 'home' %}" class="text-link">Tất cả sự kiện →</a></div>
+    <div class="table-responsive card-surface">
+      <table class="table align-middle mb-0">
+        <thead><tr><th>Mã sự kiện</th><th>Sự kiện</th><th>Thời gian</th><th>Đăng ký</th><th>Tình trạng</th></tr></thead>
+        <tbody>
+          {% for event in top_events %}
+            <tr><td><span class="event-code-inline">{{ event.event_code }}</span></td><td><a class="table-event-link" href="{% url 'event_detail' event.id %}">{{ event.title }}</a><small class="d-block text-muted">{{ event.location }}</small></td><td>{{ event.event_date|date:"d/m/Y H:i" }}</td><td>{{ event.confirmed_count }}/{{ event.capacity }}</td><td>{% if event.is_active %}<span class="status-pill status-open">Đang mở</span>{% else %}<span class="status-pill status-upcoming">Đã đóng</span>{% endif %}</td></tr>
+          {% empty %}<tr><td colspan="5" class="text-center text-muted py-4">Chưa có sự kiện. Hãy tạo sự kiện đầu tiên.</td></tr>{% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section-block">
+    <div class="section-heading"><div><span class="eyebrow text-primary">SẮP TỚI</span><h2>Lịch sự kiện</h2></div></div>
+    <div class="row g-3">
+      {% for event in upcoming_events %}
+        <div class="col-md-6 col-lg-4"><a href="{% url 'event_detail' event.id %}" class="upcoming-card"><span class="calendar-date">{{ event.event_date|date:"d" }}<small>{{ event.event_date|date:"M"|upper }}</small></span><span><strong>{{ event.title }}</strong><small>{{ event.event_date|date:"d/m/Y · H:i" }} · {{ event.location }}</small></span><span class="upcoming-arrow">→</span></a></div>
+      {% empty %}<p class="text-muted">Chưa có sự kiện sắp diễn ra.</p>{% endfor %}
+    </div>
+  </section>
+{% endblock %}

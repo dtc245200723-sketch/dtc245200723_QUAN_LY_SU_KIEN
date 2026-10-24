@@ -1,14 +1,20 @@
 {% extends 'events/base.html' %}
 
+{% block title %}Tạo tài khoản | EventHub{% endblock %}
+
 {% block content %}
   <div class="row justify-content-center">
-    <div class="col-md-6">
-      <h2>Create Account</h2>
+    <div class="col-md-6 col-lg-5">
+      <div class="card-surface p-4 p-lg-5">
+      <span class="eyebrow text-primary">THAM GIA EVENTHUB</span><h1 class="h2 mt-2">Tạo tài khoản</h1>
+      <p class="text-secondary">Tạo tài khoản để đăng ký sự kiện và lưu vé điện tử.</p>
       <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Sign Up</button>
+        <button type="submit" class="btn btn-primary w-100">Tạo tài khoản</button>
       </form>
+      <p class="small mt-3 mb-0">Đã có tài khoản? <a href="{% url 'login' %}">Đăng nhập</a></p>
+      </div>
     </div>
   </div>
 {% endblock %}
